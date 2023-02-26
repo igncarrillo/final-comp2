@@ -34,7 +34,8 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
-### ide Files ###
+### idea Files ###
 .idea
+**/__pycache__/
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
