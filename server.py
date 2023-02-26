@@ -1,4 +1,5 @@
 import os
+import pickle
 import socketserver as ss
 import threading
 
@@ -13,11 +14,10 @@ class ThreadingTCPHandler(ss.BaseRequestHandler):
     def handle(self):
         # read msg
         print(f"[NEW CONNECTION] --> thread: {threading.current_thread()}")
-        data = self.request.recv(1024).decode()
-        print(f"|--> message received: {data.rstrip()} |--> from client: {self.client_address}, ")
-
+        party = pickle.loads(self.request.recv(1024))
+        print(f"|--> message received: {party} |--> from client: {self.client_address}, ")
         # answer msg
-        self.request.sendall(data.upper().encode())
+        self.request.sendall(pickle.dumps(party))
 
 
 # ss with threads to handle new connections
@@ -35,6 +35,7 @@ if __name__ == '__main__':
     # create server and bind at host on port
     with ThreadingTCPServer((host, int(port)), ThreadingTCPHandler) as server:
         # activate server, it will keep running until keyboard interruption
+        print("WELCOME TO THE CAR POOLING APP")
         print(f"server listening on {host}:{port}")
         try:
             server.serve_forever()
