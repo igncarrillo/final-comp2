@@ -19,7 +19,7 @@ class Receipt(object):
                f'\nReceipt id:{self.id}' \
                f'\nAssigned Car: {self.car.id}' \
                f'\nJourney: {self.journey.id}' \
-               f'\nTrip time: {self.time}s' \
+               f'\nTrip time: {self.time:.2f}s' \
                f'\nRate: ${self.flatRate}/s' \
-               f'\nTotal: ${self.total}' \
+               f'\nTotal: ${self.total:.2f}' \
                f'\n+++++++++++++++++++++++'
