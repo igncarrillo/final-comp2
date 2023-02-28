@@ -1,6 +1,8 @@
+import argparse
 import pickle
 import socket as socket
-import argparse
+
+import entities.car
 from entities.journey import Journey
 
 if __name__ == '__main__':
@@ -10,8 +12,9 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--address', type=str, required=True, help="server address")
 
     args = parser.parse_args()
+
+    # create journey as required
     journey = Journey(args.size)
-    print(f"{journey} created successfully")
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         # connect to server
@@ -24,4 +27,9 @@ if __name__ == '__main__':
             msg = sock.recv(1024)
             if not msg:
                 break
-            print(pickle.loads(msg))
+            rsp = pickle.loads(msg)
+            if type(rsp) == entities.car.Car:  # if car is assigned
+                k = input(f"you are on car {rsp.id}\npress enter key to finish the trip...\n")
+                sock.sendall(pickle.dumps(k))
+                rsp = pickle.loads(sock.recv(1024))
+            print(rsp)
