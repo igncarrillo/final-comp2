@@ -1,6 +1,8 @@
 import multiprocessing
 import os
 import pickle
+import re
+import socket
 import socketserver as ss
 import threading
 import time
@@ -70,9 +72,10 @@ class ThreadingTCPServer(ss.ThreadingMixIn, ss.TCPServer):
     daemon_threads = True  # it will exit immediately at shut down
 
     # wrap constructor to add mp pool
-    def __init__(self, server_address, RequestHandlerClass):
-        super().__init__(server_address, RequestHandlerClass)
+    def __init__(self, server_address, RequestHandlerClass, ip_version):
+        self.address_family = ip_version
         self.pool = multiprocessing.Pool()  # as many pool process as cpu cores
+        super().__init__(server_address, RequestHandlerClass)
 
 
 if __name__ == "__main__":
@@ -88,8 +91,12 @@ if __name__ == "__main__":
     # shared lock
     cars_lock = multiprocessing.Manager().Lock()
 
+    ipv = socket.AF_INET
+    if host == '::1' or re.match(r"\b(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\b", host):
+        ipv = socket.AF_INET6  # use ipv6 socket
+
     # create server and bind at host on port
-    with ThreadingTCPServer((host, int(port)), ThreadingTCPHandler) as server:
+    with ThreadingTCPServer((host, int(port)), ThreadingTCPHandler, ipv) as server:
         server.pool.apply_async(assign_car)
         server.pool.apply_async(leave_car)
         server.pool.apply_async(print_receipt)
