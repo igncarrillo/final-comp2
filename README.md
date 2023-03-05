@@ -12,11 +12,15 @@ git clone https://github.com/igncarrillo/final-comp2.git
 ```bash
 cd final-comp2
 ```
+Build server image
+```bash
+docker build --rm -f Dockerfile.server -t server_image:latest .
+```
 Start the server
 ```bash
 docker-compose up --build
 ```
-Build client containers
+Build client image
 ```bash
 docker build --rm -f Dockerfile.client -t client_image:latest .
 ```
