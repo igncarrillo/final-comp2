@@ -6,13 +6,30 @@ in order to contribute to environment and reduce the carbon footprint
 
 ## Installation Guide
 
-*[TODO]*
+```bash
+git clone https://github.com/igncarrillo/final-comp2.git
+```
+```bash
+cd final-comp2
+```
+Start the server
+```bash
+docker-compose up --build
+```
+Build client containers
+```bash
+docker build --rm -f Dockerfile.client -t client_image:latest .
+```
+Run client containers with desired journey size (-s = 1 on this example)
+```bash
+docker run -it --network final_client-server --env-file .env client_image:latest -s 1
+```
 
 ## Environment Variables
 
 You should set the following environment variables to your .env file
 
-`IP`
+`HOST`
 
 `PORT`
 
@@ -24,7 +41,7 @@ You should set the following environment variables to your .env file
 - Thread and Process safe by IPC as shared memory and locks.
 - Client arguments parser
 - Pickle serialization and deserialization
-- Docker ready *[soon]*
+- Docker ready
 
 ## Documentation
 
