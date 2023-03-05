@@ -4,7 +4,7 @@ import socketserver as ss
 import threading
 import time
 
-import entities.car as ec
+import csvst as st
 import entities.commons as commons
 import entities.receipt as er
 
@@ -73,12 +73,12 @@ class ThreadingTCPServer(ss.ThreadingMixIn, ss.TCPServer):
 if __name__ == "__main__":
     # shared on memory storage
     cars_st = multiprocessing.Manager().dict()
-    cars_st.update(ec.create_cars_st(commons.__defaultCarsQuantity__))
+    cars_st.update(st.get_from_csv())
 
     # shared lock
     cars_lock = multiprocessing.Manager().Lock()
 
-    host, port, ipv = commons.fillValues()
+    host, port, ipv = commons.fill_values()
 
     # create server and bind at host on port
     with ThreadingTCPServer((host, port), ThreadingTCPHandler, ipv) as server:

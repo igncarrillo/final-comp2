@@ -11,7 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--size', type=int, required=True, choices=range(1, 5), help="client journey size")
     args = parser.parse_args()
 
-    host, port, ipv = commons.fillValues()
+    host, port, ipv = commons.fill_values()
     if host != commons.__defaultHost__:
         host = 'server'
 
