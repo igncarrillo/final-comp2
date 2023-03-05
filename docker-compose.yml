@@ -1,0 +1,19 @@
+version: '2.1'
+services:
+  server:
+    build:
+      dockerfile: Dockerfile.server
+    image: server_image:latest
+    environment:
+      # read from .env file
+      - HOST=${HOST}
+      - PORT=${PORT}
+    ports:
+      # bind host 8080 port to container ${port}
+      - "8080:${PORT}"
+    networks:
+      client-server:
+    tty: true
+networks:
+  client-server:
+    driver: bridge

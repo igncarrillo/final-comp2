@@ -1,20 +1,12 @@
 import multiprocessing
-import os
 import pickle
-import re
-import socket
 import socketserver as ss
 import threading
 import time
 
-from dotenv import load_dotenv
-
 import entities.car as ec
+import entities.commons as commons
 import entities.receipt as er
-
-__defaultHost__ = 'localhost'
-__defaultPort__ = '8080'
-__defaultCarsQuantity__ = 5
 
 
 def assign_car(j):
@@ -79,24 +71,17 @@ class ThreadingTCPServer(ss.ThreadingMixIn, ss.TCPServer):
 
 
 if __name__ == "__main__":
-    # read .env file
-    load_dotenv()
-    host = os.getenv('HOST', __defaultHost__)
-    port = os.getenv('PORT', __defaultPort__)
-
     # shared on memory storage
     cars_st = multiprocessing.Manager().dict()
-    cars_st.update(ec.create_cars_st(__defaultCarsQuantity__))
+    cars_st.update(ec.create_cars_st(commons.__defaultCarsQuantity__))
 
     # shared lock
     cars_lock = multiprocessing.Manager().Lock()
 
-    ipv = socket.AF_INET
-    if host == '::1' or re.match(r"\b(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\b", host):
-        ipv = socket.AF_INET6  # use ipv6 socket
+    host, port, ipv = commons.fillValues()
 
     # create server and bind at host on port
-    with ThreadingTCPServer((host, int(port)), ThreadingTCPHandler, ipv) as server:
+    with ThreadingTCPServer((host, port), ThreadingTCPHandler, ipv) as server:
         server.pool.apply_async(assign_car)
         server.pool.apply_async(leave_car)
         server.pool.apply_async(print_receipt)
