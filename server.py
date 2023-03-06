@@ -1,11 +1,14 @@
 import multiprocessing
+import os
 import pickle
+import re
+import socket
 import socketserver as ss
+import sys
 import threading
 import time
 
 import csvst as st
-import entities.commons as commons
 import entities.receipt as er
 
 
@@ -20,6 +23,7 @@ def assign_car(j):
             to_edit.available = False
             to_edit.journey = j
             cars_st[car_id] = to_edit
+            print(cars_st)
             return cars_st[car_id], begin
         else:
             return None, None
@@ -32,6 +36,7 @@ def leave_car(car_id):
         to_edit.journey = None
         to_edit.available = True
         cars_st[car_id] = to_edit
+        print(cars_st)
     return time.time()
 
 
@@ -71,6 +76,20 @@ class ThreadingTCPServer(ss.ThreadingMixIn, ss.TCPServer):
 
 
 if __name__ == "__main__":
+    host = os.getenv('HOST')
+    if host is None:
+        print("you must set HOST value at .env file")
+        sys.exit(1)
+
+    port = os.getenv('PORT')
+    if port is None:
+        print("you must set PORT value at .env file")
+        sys.exit(1)
+
+    ipv = socket.AF_INET  # use ipv4 socket
+    if host.startswith('::') or re.match(r"\b(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\b", host):
+        ipv = socket.AF_INET6  # use ipv6 socket
+
     # shared on memory storage
     cars_st = multiprocessing.Manager().dict()
     cars_st.update(st.get_from_csv())
@@ -78,10 +97,8 @@ if __name__ == "__main__":
     # shared lock
     cars_lock = multiprocessing.Manager().Lock()
 
-    host, port, ipv = commons.fill_values()
-
     # create server and bind at host on port
-    with ThreadingTCPServer((host, port), ThreadingTCPHandler, ipv) as server:
+    with ThreadingTCPServer((host, int(port)), ThreadingTCPHandler, ipv) as server:
         server.pool.apply_async(assign_car)
         server.pool.apply_async(leave_car)
         server.pool.apply_async(print_receipt)
