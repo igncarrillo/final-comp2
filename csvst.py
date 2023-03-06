@@ -11,7 +11,7 @@ def get_from_csv():
         with open(__filename__, newline='') as file:
             cars = []
             for row in csv.DictReader(file):
-                cars.append(ec.Car(row['id'], row['seats']))
+                cars.append(ec.Car(row['id'], int(row['seats'])))
             return {k: v for k, v in sorted({car.id: car for car in cars}.items(), key=lambda cars: cars[1].seats)}
     except FileNotFoundError:
         print(f"try to read from csv failed. {__filename__} not found")
