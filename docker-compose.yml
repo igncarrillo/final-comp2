@@ -1,4 +1,4 @@
-version: '3'
+version: '3.5'
 services:
   server:
     build:
@@ -17,4 +17,5 @@ services:
     tty: true
 networks:
   client-server:
+    name: client-server
     driver: bridge

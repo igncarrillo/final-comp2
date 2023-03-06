@@ -18,7 +18,6 @@ if __name__ == '__main__':
     # create journey as required
     journey = ej.Journey(args.size)
 
-    print(f"{host}:{port} -> ipv {ipv}")
     with socket.socket(ipv, socket.SOCK_STREAM) as sock:
         # connect to server
         sock.connect((host, port))
