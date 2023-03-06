@@ -19,3 +19,4 @@ networks:
   client-server:
     name: client-server
     driver: bridge
+    enable_ipv6: true
